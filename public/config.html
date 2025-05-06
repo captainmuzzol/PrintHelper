@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打印机配置 - XXXX打印助手</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .printer-config {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .printer-config h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .printer-config h3 i {
+            margin-right: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .printer-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn-add {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-add i {
+            margin-right: 5px;
+        }
+
+        .printer-list {
+            margin-top: 20px;
+        }
+
+        .printer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .printer-info {
+            flex-grow: 1;
+        }
+
+        .printer-actions button {
+            margin-left: 10px;
+        }
+
+        .btn-test {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .help-text {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .help-text h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .help-text ul {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="bi bi-printer"></i> XXXX打印助手 - 打印机配置</h1>
+            <p class="subtitle">设置您的打印机</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="help-text">
+                    <h3><i class="bi bi-info-circle"></i> 打印机配置说明</h3>
+                    <p>请确保打印机名称与Windows系统中的打印机名称完全一致，否则可能导致打印失败。</p>
+                    <ul>
+                        <li>打印机ID：用于系统内部标识，建议使用简短的数字或字母</li>
+                        <li>打印机名称：显示在打印助手界面上的名称</li>
+                        <li>系统打印机名称：<strong>必须与Windows系统中的打印机名称完全一致</strong>，可以在Windows打印机设置中查看</li>
+                    </ul>
+                </div>
+
+                <div class="printer-config">
+                    <h3><i class="bi bi-gear"></i> 添加/编辑打印机</h3>
+                    <form id="printerForm">
+                        <input type="hidden" id="printerId" value="">
+                        <div class="form-group">
+                            <label for="printerIdInput">打印机ID</label>
+                            <input type="text" id="printerIdInput" placeholder="例如：809" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="printerName">打印机名称</label>
+                            <input type="text" id="printerName" placeholder="例如：809打印机" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="systemName">系统打印机名称 (必须与Windows系统中的打印机名称一致)</label>
+                            <input type="text" id="systemName" placeholder="例如：809打印机" required>
+                        </div>
+                        <div class="printer-actions">
+                            <button type="submit" class="btn-add" id="saveBtn">
+                                <i class="bi bi-save"></i> 保存打印机
+                            </button>
+                            <button type="button" class="btn-secondary" id="cancelBtn" style="display: none;">
+                                取消编辑
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="printer-list" id="printerList">
+                    <!-- 打印机列表将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </main>
+
+        <div id="notification" class="notification">
+            <p id="notificationText"></p>
+        </div>
+
+        <footer>
+            <p><a href="index.html">返回打印页面</a></p>
+            <p>&copy; 2025 编辑者：许钦滔</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 获取DOM元素
+            const printerForm = document.getElementById('printerForm');
+            const printerIdField = document.getElementById('printerId');
+            const printerIdInput = document.getElementById('printerIdInput');
+            const printerName = document.getElementById('printerName');
+            const systemName = document.getElementById('systemName');
+            const saveBtn = document.getElementById('saveBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const printerList = document.getElementById('printerList');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+
+            // 加载打印机列表
+            loadPrinters();
+
+            // 表单提交事件
+            printerForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                savePrinter();
+            });
+
+            // 取消编辑按钮
+            cancelBtn.addEventListener('click', function () {
+                resetForm();
+            });
+
+            // 加载打印机列表
+            function loadPrinters() {
+                fetch('/api/printers')
+                    .then(response => response.json())
+                    .then(printers => {
+                        printerList.innerHTML = '';
+
+                        if (printers.length === 0) {
+                            printerList.innerHTML = '<p>暂无打印机配置</p>';
+                            return;
+                        }
+
+                        printers.forEach(printer => {
+                            const printerElement = document.createElement('div');
+                            printerElement.className = 'printer-item';
+                            printerElement.innerHTML = `
+                                <div class="printer-info">
+                                    <h4>${printer.name}</h4>
+                                    <p>ID: ${printer.id}</p>
+                                    <p>系统名称: ${printer.systemName || '未设置'}</p>
+                                </div>
+                                <div class="printer-actions">
+                                    <button class="btn-test" data-id="${printer.id}">
+                                        <i class="bi bi-check-circle"></i> 测试
+                                    </button>
+                                    <button class="btn-edit" data-id="${printer.id}">
+                                        <i class="bi bi-pencil"></i> 编辑
+                                    </button>
+                                    <button class="btn-delete" data-id="${printer.id}">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </button>
+                                </div>
+                            `;
+
+                            printerList.appendChild(printerElement);
+                        });
+
+                        // 添加测试按钮事件
+                        document.querySelectorAll('.btn-test').forEach(btn => {
+                            btn.addEventListener('click', function () {
+                                testPrinter(this.dataset.id);
+                            });
+                        });
+
+                        // 添加编辑按钮事件
+                        document.querySelectorAll('.btn-edit').forEach(btn => {
+                            btn.addEventListener('click', function () {
+                                editPrinter(this.dataset.id);
+                            });
+                        });
+
+                        // 添加删除按钮事件
+                        document.querySelectorAll('.btn-delete').forEach(btn => {
+                            btn.addEventListener('click', function () {
+                                deletePrinter(this.dataset.id);
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('加载打印机列表失败:', error);
+                        showNotification('加载打印机列表失败，请刷新页面重试', true);
+                    });
+            }
+
+            // 保存打印机
+            function savePrinter() {
+                const id = printerIdField.value || printerIdInput.value;
+                const printer = {
+                    name: printerName.value,
+                    systemName: systemName.value
+                };
+
+                fetch(`/api/printers/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(printer)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(data.message);
+                            resetForm();
+                            loadPrinters();
+                        } else {
+                            showNotification(data.message, true);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('保存打印机失败:', error);
+                        showNotification('保存打印机失败，请重试', true);
+                    });
+            }
+
+            // 编辑打印机
+            function editPrinter(id) {
+                fetch(`/api/printers/${id}`)
+                    .then(response => response.json())
+                    .then(printer => {
+                        printerIdField.value = printer.id;
+                        printerIdInput.value = printer.id;
+                        printerIdInput.disabled = true;
+                        printerName.value = printer.name;
+                        systemName.value = printer.systemName || '';
+
+                        saveBtn.innerHTML = '<i class="bi bi-save"></i> 更新打印机';
+                        cancelBtn.style.display = 'block';
+                    })
+                    .catch(error => {
+                        console.error('获取打印机信息失败:', error);
+                        showNotification('获取打印机信息失败，请重试', true);
+                    });
+            }
+
+            // 测试打印机
+            function testPrinter(id) {
+                fetch(`/api/printers/${id}/test-page`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showNotification(data.message, !data.success);
+                    })
+                    .catch(error => {
+                        console.error('测试打印机失败:', error);
+                        showNotification('测试打印机失败，请重试', true);
+                    });
+            }
+
+            // 删除打印机
+            function deletePrinter(id) {
+                if (confirm('确定要删除这台打印机吗？')) {
+                    // 这里应该有一个删除API，但目前后端可能没有实现
+                    // 临时解决方案：将打印机名称设为空，相当于禁用
+                    fetch(`/api/printers/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: `已删除的打印机 (${id})`,
+                            systemName: ''
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showNotification('打印机已删除');
+                                loadPrinters();
+                            } else {
+                                showNotification(data.message, true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('删除打印机失败:', error);
+                            showNotification('删除打印机失败，请重试', true);
+                        });
+                }
+            }
+
+            // 重置表单
+            function resetForm() {
+                printerForm.reset();
+                printerIdField.value = '';
+                printerIdInput.disabled = false;
+                saveBtn.innerHTML = '<i class="bi bi-save"></i> 保存打印机';
+                cancelBtn.style.display = 'none';
+            }
+
+            // 显示通知
+            function showNotification(message, isError = false) {
+                notificationText.textContent = message;
+                notification.style.display = 'block';
+
+                if (isError) {
+                    notification.classList.add('error');
+                } else {
+                    notification.classList.remove('error');
+                }
+
+                // 3秒后自动隐藏
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,299 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部样式 */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 1.2rem;
+}
+
+/* 卡片样式 */
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* 上传区域样式 */
+.upload-area {
+    border: 2px dashed #3498db;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.upload-area:hover {
+    background-color: #ecf0f1;
+    border-color: #2980b9;
+}
+
+.upload-area i {
+    font-size: 3rem;
+    color: #3498db;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.upload-area p {
+    color: #7f8c8d;
+}
+
+/* 文件信息样式 */
+.file-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.file-preview {
+    display: flex;
+    align-items: center;
+}
+
+.file-preview i {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-right: 15px;
+}
+
+/* 打印机选择样式 */
+.printer-selection {
+    margin-bottom: 20px;
+}
+
+.printer-selection h3,
+.print-options h3 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+/* 打印选项样式 */
+.print-options {
+    margin-bottom: 20px;
+}
+
+.option-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.option-group label {
+    width: 100px;
+    color: #2c3e50;
+}
+
+.option-group input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.option-note {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 3px solid #3498db;
+}
+
+.option-note p {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.option-note i {
+    margin-right: 8px;
+    color: #3498db;
+}
+
+.printer-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.printer-option {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.printer-option:hover {
+    border-color: #3498db;
+    background-color: #f8f9fa;
+}
+
+.printer-option.selected {
+    border-color: #3498db;
+    background-color: #edf7fd;
+}
+
+.printer-option i {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn-primary:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.btn-primary i {
+    margin-right: 10px;
+}
+
+.btn-secondary {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #dde4e6;
+}
+
+/* 通知样式 */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2ecc71;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1000;
+    text-align: center;
+    min-width: 300px;
+}
+
+.notification.error {
+    background-color: #e74c3c;
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    color: #7f8c8d;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #ecf0f1;
+}
+
+footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .printer-list {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .printer-list {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .notification {
+        min-width: 90%;
+    }
+}

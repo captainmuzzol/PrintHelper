@@ -1,0 +1,27 @@
+# 依赖目录
+node_modules/
+
+# 上传的文件
+uploads/
+
+# 环境变量
+.env
+
+# 日志文件
+logs
+*.log
+npm-debug.log*
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# IDE配置
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 安装包
+安装/
+backup/
