@@ -10,15 +10,16 @@
         "test-printers": "echo \"请实现打印机测试功能\""
     },
     "dependencies": {
-        "express": "^4.18.2",
-        "multer": "^1.4.5-lts.1",
-        "cors": "^2.8.5",
-        "cookie-parser": "^1.4.6",
-        "dotenv": "^16.3.1",
-        "compression": "^1.7.4",
         "body-parser": "^1.20.2",
-        "path": "^0.12.7",
-        "fs": "0.0.1-security"
+        "bootstrap-icons": "^1.12.1",
+        "compression": "^1.7.4",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "fs": "0.0.1-security",
+        "multer": "^1.4.5-lts.1",
+        "path": "^0.12.7"
     },
     "devDependencies": {
         "nodemon": "^3.0.1"
