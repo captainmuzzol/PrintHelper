@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const copies = document.getElementById('copies');
 
     // 状态变量
-    let selectedFiles = new Map(); // 使用Map存储文件及其打印设置
+    let selectedFiles = new Map(); // 使用Map存储文件
     let selectedPrinter = null;
 
     // 初始化
@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     printerElement.className = 'printer-option';
                     printerElement.dataset.printerId = printer.id;
                     printerElement.innerHTML = `
-            <i class="bi bi-printer"></i>
-            <p>${printer.name}</p>
-          `;
+                        <i class="bi bi-printer"></i>
+                        <p>${printer.name}</p>
+                    `;
 
                     printerElement.addEventListener('click', function () {
                         document.querySelectorAll('.printer-option').forEach(el => {
@@ -112,10 +112,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const allowedTypes = ['.pdf'];
         
         for (let file of files) {
-        const fileExt = '.' + file.name.split('.').pop().toLowerCase();
-
-        if (!allowedTypes.includes(fileExt)) {
-            showNotification('暂时只支持PDF文件格式', true);
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(fileExt)) {
+                showNotification('暂时只支持PDF文件格式', true);
                 continue;
             }
 
@@ -124,8 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // 存储文件信息
             selectedFiles.set(fileId, {
-                file: file,
-                duplex: true // 默认双面打印
+                file: file
             });
 
             // 创建文件项UI
@@ -137,25 +136,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p>${file.name}</p>
                 </div>
                 <div class="file-options">
-                    <label class="switch">
-                        <input type="checkbox" class="duplex-toggle" data-file-id="${fileId}" checked>
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="duplex-label">双面打印</span>
                     <button class="btn-remove" data-file-id="${fileId}">
                         <i class="bi bi-x-circle"></i>
                     </button>
                 </div>
             `;
-
-            // 添加事件监听器
-            const duplexToggle = fileItem.querySelector('.duplex-toggle');
-            duplexToggle.addEventListener('change', function() {
-                const fileId = this.dataset.fileId;
-                const fileData = selectedFiles.get(fileId);
-                fileData.duplex = this.checked;
-                selectedFiles.set(fileId, fileData);
-            });
 
             const removeBtn = fileItem.querySelector('.btn-remove');
             removeBtn.addEventListener('click', function() {
@@ -191,9 +176,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // 添加所有文件及其打印设置
         let index = 0;
         selectedFiles.forEach((fileData, fileId) => {
-            console.log(`准备发送文件: ${fileData.file.name}, 双面打印: ${fileData.duplex}`);
+            console.log(`准备发送文件: ${fileData.file.name}`);
             formData.append('files', fileData.file);
-            formData.append(`duplex[${index}]`, fileData.duplex ? 'true' : 'false');
             index++;
         });
 

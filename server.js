@@ -137,11 +137,11 @@ app.post('/api/print', upload.array('files'), (req, res) => {
         if (invalidFiles.length > 0) {
             // 删除不支持的文件
             invalidFiles.forEach(file => {
-            try {
+                try {
                     fs.unlinkSync(file.path);
-            } catch (e) {
-                console.error('删除不支持的文件失败:', e);
-            }
+                } catch (e) {
+                    console.error('删除不支持的文件失败:', e);
+                }
             });
             return res.status(400).json({ success: false, message: '暂时只支持PDF文件格式' });
         }
@@ -153,12 +153,7 @@ app.post('/api/print', upload.array('files'), (req, res) => {
         res.cookie('lastPrinter', printerId, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // 30天
 
         // 处理每个文件
-        const printJobs = req.files.map((file, index) => {
-            // 获取该文件的单双面设置
-            console.log(`接收到的参数 duplex[${index}] 值: ${req.body[`duplex[${index}]`]}, 类型: ${typeof req.body[`duplex[${index}]`]}`);
-            const fileDuplex = req.body[`duplex[${index}]`] === 'true';
-            console.log(`文件 ${file.filename} 的双面打印设置: ${fileDuplex}`);
-
+        const printJobs = req.files.map((file) => {
             return {
                 filename: file.filename,
                 filePath: file.path,
@@ -166,8 +161,7 @@ app.post('/api/print', upload.array('files'), (req, res) => {
                 pageRange: pageRange,
                 copies: copies ? parseInt(copies) : 1,
                 clientIp: clientIp,
-                timestamp: new Date(),
-                duplex: fileDuplex
+                timestamp: new Date()
             };
         });
 
