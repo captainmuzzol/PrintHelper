@@ -20,16 +20,12 @@
             <div class="card">
                 <div class="upload-area" id="uploadArea">
                     <i class="bi bi-cloud-arrow-up-fill"></i>
-                    <p>拖拽文件到此处或点击上传</p>
-                    <input type="file" id="fileInput" hidden>
+                    <p>拖拽文件到此处或点击上传<strong> (支持批量拖拽上传)</strong></p>
+                    <input type="file" id="fileInput" multiple hidden>
                 </div>
 
-                <div class="file-info" id="fileInfo" style="display: none;">
-                    <div class="file-preview">
-                        <i class="bi bi-file-earmark-text"></i>
-                        <p id="fileName">文件名称.pdf</p>
-                    </div>
-                    <button class="btn-secondary" id="changeFile">更换文件</button>
+                <div class="files-list" id="filesList" style="display: none;">
+                    <!-- 文件列表将通过JavaScript动态加载 -->
                 </div>
 
                 <div class="printer-selection">
@@ -49,9 +45,6 @@
                         <label for="copies">打印份数：</label>
                         <input type="number" id="copies" min="1" value="1">
                     </div>
-                    <div class="option-note">
-                        <p><i class="bi bi-info-circle"></i> 默认双面打印</p>
-                    </div>
                 </div>
 
                 <button class="btn-primary" id="printBtn" disabled>
@@ -65,7 +58,7 @@
         </div>
 
         <footer>
-            <p><a href="config.html">打印机配置</a> | 技术支持：<a href="tel:+86086162">86086162</a></p>
+            <p><a href="config.html">打印机配置</a> (请勿修改) | 技术支持：<a href="tel:+86086162">86086162</a></p>
             <p>&copy; 2025 XX市XXXX院</p>
         </footer>
     </div>

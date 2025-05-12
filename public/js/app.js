@@ -2,9 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 获取DOM元素
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileName = document.getElementById('fileName');
-    const changeFileBtn = document.getElementById('changeFile');
+    const filesList = document.getElementById('filesList');
     const printerList = document.getElementById('printerList');
     const printBtn = document.getElementById('printBtn');
     const notification = document.getElementById('notification');
@@ -13,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const copies = document.getElementById('copies');
 
     // 状态变量
-    let selectedFile = null;
+    let selectedFiles = new Map(); // 使用Map存储文件及其打印设置
     let selectedPrinter = null;
 
     // 初始化
@@ -48,16 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
           `;
 
                     printerElement.addEventListener('click', function () {
-                        // 移除其他打印机的选中状态
                         document.querySelectorAll('.printer-option').forEach(el => {
                             el.classList.remove('selected');
                         });
 
-                        // 选中当前打印机
                         this.classList.add('selected');
                         selectedPrinter = printer.id;
 
-                        // 检查是否可以启用打印按钮
                         checkPrintButtonState();
                     });
 
@@ -72,15 +67,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 设置事件监听器
     function setupEventListeners() {
-        // 限制文件类型
-        fileInput.setAttribute('accept', '.pdf,.txt,.jpg,.jpeg,.png,.gif,.bmp');
+        fileInput.setAttribute('accept', '.pdf');
 
-        // 上传区域点击事件
         uploadArea.addEventListener('click', function () {
             fileInput.click();
         });
 
-        // 文件拖拽事件
         uploadArea.addEventListener('dragover', function (e) {
             e.preventDefault();
             uploadArea.style.borderColor = '#2980b9';
@@ -98,56 +90,94 @@ document.addEventListener('DOMContentLoaded', function () {
             uploadArea.style.backgroundColor = '';
 
             if (e.dataTransfer.files.length > 0) {
-                handleFileSelect(e.dataTransfer.files[0]);
+                handleFiles(e.dataTransfer.files);
             }
         });
 
-        // 文件选择事件
         fileInput.addEventListener('change', function () {
             if (fileInput.files.length > 0) {
-                handleFileSelect(fileInput.files[0]);
+                handleFiles(fileInput.files);
             }
         });
 
-        // 更换文件按钮
-        changeFileBtn.addEventListener('click', function () {
-            fileInput.click();
-        });
-
-        // 打印按钮
         printBtn.addEventListener('click', function () {
-            if (selectedFile && selectedPrinter) {
-                sendPrintJob();
+            if (selectedFiles.size > 0 && selectedPrinter) {
+                sendPrintJobs();
             }
         });
     }
 
     // 处理文件选择
-    function handleFileSelect(file) {
-        // 检查文件类型
-        // const allowedTypes = ['.pdf', '.txt', '.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+    function handleFiles(files) {
         const allowedTypes = ['.pdf'];
+        
+        for (let file of files) {
         const fileExt = '.' + file.name.split('.').pop().toLowerCase();
 
         if (!allowedTypes.includes(fileExt)) {
             showNotification('暂时只支持PDF文件格式', true);
-            return;
+                continue;
+            }
+
+            // 为每个文件生成唯一ID
+            const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // 存储文件信息
+            selectedFiles.set(fileId, {
+                file: file,
+                duplex: true // 默认双面打印
+            });
+
+            // 创建文件项UI
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="file-preview">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <p>${file.name}</p>
+                </div>
+                <div class="file-options">
+                    <label class="switch">
+                        <input type="checkbox" class="duplex-toggle" data-file-id="${fileId}" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="duplex-label">双面打印</span>
+                    <button class="btn-remove" data-file-id="${fileId}">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>
+            `;
+
+            // 添加事件监听器
+            const duplexToggle = fileItem.querySelector('.duplex-toggle');
+            duplexToggle.addEventListener('change', function() {
+                const fileId = this.dataset.fileId;
+                const fileData = selectedFiles.get(fileId);
+                fileData.duplex = this.checked;
+                selectedFiles.set(fileId, fileData);
+            });
+
+            const removeBtn = fileItem.querySelector('.btn-remove');
+            removeBtn.addEventListener('click', function() {
+                const fileId = this.dataset.fileId;
+                selectedFiles.delete(fileId);
+                fileItem.remove();
+                checkPrintButtonState();
+            });
+
+            filesList.appendChild(fileItem);
         }
 
-        selectedFile = file;
-        fileName.textContent = file.name;
-
-        // 显示文件信息，隐藏上传区域
+        // 显示文件列表，隐藏上传区域
         uploadArea.style.display = 'none';
-        fileInfo.style.display = 'flex';
+        filesList.style.display = 'block';
 
-        // 检查是否可以启用打印按钮
         checkPrintButtonState();
     }
 
     // 检查打印按钮状态
     function checkPrintButtonState() {
-        if (selectedFile && selectedPrinter) {
+        if (selectedFiles.size > 0 && selectedPrinter) {
             printBtn.disabled = false;
         } else {
             printBtn.disabled = true;
@@ -155,13 +185,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 发送打印任务
-    function sendPrintJob() {
-        // 创建FormData对象
+    function sendPrintJobs() {
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        
+        // 添加所有文件及其打印设置
+        let index = 0;
+        selectedFiles.forEach((fileData, fileId) => {
+            console.log(`准备发送文件: ${fileData.file.name}, 双面打印: ${fileData.duplex}`);
+            formData.append('files', fileData.file);
+            formData.append(`duplex[${index}]`, fileData.duplex ? 'true' : 'false');
+            index++;
+        });
+
         formData.append('printerId', selectedPrinter);
 
-        // 添加页面范围和打印份数
         if (pageRange.value.trim()) {
             formData.append('pageRange', pageRange.value.trim());
         }
@@ -170,42 +207,39 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('copies', copies.value);
         }
 
-        // 禁用打印按钮，防止重复提交
         printBtn.disabled = true;
         printBtn.textContent = '正在处理...';
 
-        // 发送请求
         fetch('/api/print', {
             method: 'POST',
             body: formData
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(data.message);
-
-                    // 重置文件选择
-                    resetFileSelection();
-                } else {
-                    showNotification(data.message, true);
-                    printBtn.disabled = false;
-                    printBtn.innerHTML = '<i class="bi bi-printer-fill"></i> 发送打印';
-                }
-            })
-            .catch(error => {
-                console.error('打印请求失败:', error);
-                showNotification('打印请求失败，请重试', true);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message);
+                resetFileSelection();
+            } else {
+                showNotification(data.message, true);
                 printBtn.disabled = false;
                 printBtn.innerHTML = '<i class="bi bi-printer-fill"></i> 发送打印';
-            });
+            }
+        })
+        .catch(error => {
+            console.error('打印请求失败:', error);
+            showNotification('打印请求失败，请重试', true);
+            printBtn.disabled = false;
+            printBtn.innerHTML = '<i class="bi bi-printer-fill"></i> 发送打印';
+        });
     }
 
     // 重置文件选择
     function resetFileSelection() {
-        selectedFile = null;
+        selectedFiles.clear();
         fileInput.value = '';
+        filesList.innerHTML = '';
         uploadArea.style.display = 'block';
-        fileInfo.style.display = 'none';
+        filesList.style.display = 'none';
         printBtn.disabled = true;
         printBtn.innerHTML = '<i class="bi bi-printer-fill"></i> 发送打印';
     }
@@ -221,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function () {
             notification.classList.remove('error');
         }
 
-        // 3秒后自动隐藏
         setTimeout(function () {
             notification.style.display = 'none';
         }, 3000);
@@ -241,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (lastPrinter) {
-            // 等待打印机列表加载完成后选中上次的打印机
             setTimeout(() => {
                 const printerOption = document.querySelector(`.printer-option[data-printer-id="${lastPrinter}"]`);
                 if (printerOption) {

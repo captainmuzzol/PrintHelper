@@ -116,9 +116,9 @@ app.get('/api/printer-protocols', (req, res) => {
 });
 
 // 路由 - 上传文件并打印
-app.post('/api/print', upload.single('file'), (req, res) => {
+app.post('/api/print', upload.array('files'), (req, res) => {
     try {
-        if (!req.file) {
+        if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: '请选择要打印的文件' });
         }
 
@@ -128,17 +128,21 @@ app.post('/api/print', upload.single('file'), (req, res) => {
         }
 
         // 检查文件类型
-        // const allowedTypes = ['.pdf', '.txt', '.jpg', '.jpeg', '.png', '.gif', '.bmp'];
         const allowedTypes = ['.pdf'];
-        const fileExt = path.extname(req.file.originalname).toLowerCase();
+        const invalidFiles = req.files.filter(file => {
+            const fileExt = path.extname(file.originalname).toLowerCase();
+            return !allowedTypes.includes(fileExt);
+        });
 
-        if (!allowedTypes.includes(fileExt)) {
+        if (invalidFiles.length > 0) {
             // 删除不支持的文件
+            invalidFiles.forEach(file => {
             try {
-                fs.unlinkSync(req.file.path);
+                    fs.unlinkSync(file.path);
             } catch (e) {
                 console.error('删除不支持的文件失败:', e);
             }
+            });
             return res.status(400).json({ success: false, message: '暂时只支持PDF文件格式' });
         }
 
@@ -148,15 +152,28 @@ app.post('/api/print', upload.single('file'), (req, res) => {
         // 设置cookie记住用户选择的打印机
         res.cookie('lastPrinter', printerId, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // 30天
 
+        // 处理每个文件
+        const printJobs = req.files.map((file, index) => {
+            // 获取该文件的单双面设置
+            console.log(`接收到的参数 duplex[${index}] 值: ${req.body[`duplex[${index}]`]}, 类型: ${typeof req.body[`duplex[${index}]`]}`);
+            const fileDuplex = req.body[`duplex[${index}]`] === 'true';
+            console.log(`文件 ${file.filename} 的双面打印设置: ${fileDuplex}`);
+
+            return {
+                filename: file.filename,
+                filePath: file.path,
+                printer: printerId,
+                pageRange: pageRange,
+                copies: copies ? parseInt(copies) : 1,
+                clientIp: clientIp,
+                timestamp: new Date(),
+                duplex: fileDuplex
+            };
+        });
+
         // 添加到打印队列
-        printQueueManager.addJob({
-            filename: req.file.filename,
-            filePath: req.file.path,
-            printer: printerId,
-            pageRange: pageRange,
-            copies: copies ? parseInt(copies) : 1,
-            clientIp: clientIp,
-            timestamp: new Date()
+        printJobs.forEach(job => {
+            printQueueManager.addJob(job);
         });
 
         res.json({ success: true, message: '已发送打印指令！' });
