@@ -4,15 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXXX打印助手</title>
+    <title>温岭检察打印助手</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 
 <body>
-    <div class="container">
+    <a href="http://143.86.170.164:10086" target="_blank" class="transfer-station">
+        <i class="bi bi-cloud-upload"></i>
+        <span class="label">文件中转站</span>
+    </a>
+    <div class="container" style="position: relative;">
+        <div style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+            <button id="openMergeModalBtn" class="btn-secondary">
+                <i class="bi bi-file-earmark-word-fill"></i> WORD批量合并
+            </button>
+        </div>
         <header>
-            <h1><i class="bi bi-printer"></i> XXXX打印助手</h1>
+            <h1><i class="bi bi-printer"></i> 温岭检察打印助手</h1>
             <p class="subtitle">目前仅允许打印PDF，如需打印WORD，请先另存为PDF</p>
         </header>
 
@@ -57,13 +66,36 @@
             <p id="notificationText"></p>
         </div>
 
+        <!-- WORD合并模态框 -->
+        <div id="mergeModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2><i class="bi bi-file-earmark-word-fill"></i> WORD批量合并</h2>
+
+
+                <div class="upload-area" id="mergeUploadArea">
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                    <p>拖拽文件到此处或点击上传</p>
+                    <input type="file" id="mergeFileInput" multiple hidden accept=".doc,.docx">
+                </div>
+
+                <div class="files-list" id="mergeFilesList">
+                    <!-- 文件列表 -->
+                </div>
+
+                <button class="btn-primary" id="startMergeBtn" disabled>
+                    <i class="bi bi-intersect"></i> 开始合并
+                </button>
+            </div>
+        </div>
+
         <footer>
             <p><a href="config.html">打印机配置</a> (请勿修改) | 技术支持：<a href="tel:+86086162">86086162</a></p>
-            <p>&copy; 2025 XX市XXXX院</p>
+            <p>&copy; 2026 温岭市人民检察院</p>
         </footer>
     </div>
 
-    <script src="js/app.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 
 </html>

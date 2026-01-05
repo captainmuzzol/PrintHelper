@@ -3,44 +3,19 @@
     "id": "809",
     "name": "一部打印机",
     "systemName": "一部打印机",
-    "useSystemPrinting": true
-  },
-  {
-    "id": "502",
-    "name": "政治部打印机",
-    "systemName": "政治部打印机",
-    "useSystemPrinting": true
-  },
-  {
-    "id": "301",
-    "name": "四部打印机",
-    "systemName": "四部打印机",
-    "useSystemPrinting": true
-  },
-  {
-    "id": "201",
-    "name": "七部打印机",
-    "systemName": "七部打印机",
-    "useSystemPrinting": true
-  },
-  {
-    "id": "901",
-    "name": "四部打印机二",
-    "systemName": "四部打印机二"
-  },
-  {
-    "id": "812",
-    "name": "三部打印机",
-    "systemName": "三部打印机"
-  },
-  {
-    "id": "615",
-    "name": "六部打印机",
-    "systemName": "六部打印机"
+    "useSystemPrinting": true,
+    "disabled": true
   },
   {
     "id": "001",
-    "name": "一楼案管大厅门口打印机(单面）",
-    "systemName": "一楼案管大厅门口打印机"
+    "name": "案管大厅门口打印机(单面）",
+    "systemName": "一楼案管大厅门口打印机",
+    "disabled": false
+  },
+  {
+    "id": "921",
+    "name": "四部打印机",
+    "systemName": "四部打印机",
+    "disabled": true
   }
 ]

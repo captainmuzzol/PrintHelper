@@ -1,159 +1,121 @@
-# 网络打印助手 (Print Helper)
+# 温岭检察打印助手 (Wenling Procuratorate Print Helper)
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-网络打印助手是一个专门设计用于解决国产操作系统下打印机兼容性问题的Web应用程序。通过提供统一的打印服务接口，实现跨平台打印功能，确保在各种操作系统环境下都能稳定可靠地完成打印任务。
+网络打印助手是一个专门设计用于解决国产操作系统（如银河麒麟）下打印机兼容性问题的Web应用程序。它部署在Windows服务器上，通过Web界面提供统一的打印服务接口，让客户端无需安装驱动即可实现文件打印和文档处理功能。
 
-## 功能特点
+## 🌟 核心功能
 
-- 🖨️ 跨平台打印支持
-- 🔄 统一的打印队列管理
-- ⚙️ 灵活的打印机配置
-- 🌐 Web界面管理
-- 📝 打印任务状态追踪
-- 🔍 打印机连接测试
+### 1. 跨平台打印服务
+- **PDF打印**：支持单面/双面打印，自动调用服务器端打印机。
+- **拖拽上传**：支持批量拖拽PDF文件进行打印。
+- **打印机管理**：支持添加、编辑、删除和禁用打印机配置。
+- **打印队列**：内置打印队列管理，确保任务有序执行。
 
-## 预览
+### 2. WORD批量合并
+- **格式转换**：自动将上传的 `.doc` 和 `.docx` 文件转换为统一格式。
+- **文档合并**：按文件名顺序将多个Word文档合并为一个完整的 `.docx` 文件。
+- **格式保留**：最大程度保留原文档的排版和格式。
 
-![网络打印助手界面预览](View.png)
+### 3. 便捷工具
+- **文件中转站**：集成内部文件传输链接，方便快速访问。
+- **状态监控**：实时反馈打印任务状态和服务器连接情况。
 
-## 系统要求
+## 🏗️ 技术架构
 
-- Windows服务器（推荐Windows Server 2016或更高版本）
-- Node.js 14.x或更高版本
-- 网络打印机及其驱动程序
-- 稳定的网络环境
+本项目采用前后端分离的模块化架构设计：
 
-## 快速开始
+- **后端**：Node.js + Express
+  - **MVC架构**：Controller/Service/Route 分层设计
+  - **模块化**：`src/` 目录下包含所有核心逻辑
+  - **Python集成**：使用 Python 脚本 (`src/scripts/word_merge.py`) 处理 Word 文档合并
+  - **PDFtoPrinter**：调用 `PDFtoPrinter.exe` 实现物理打印
 
-### 安装
+- **前端**：Native JavaScript (ES6 Modules)
+  - **模块化**：`public/js/modules/` 下分模块管理 (printer, print, merge, utils)
+  - **UI库**：Bootstrap Icons + 自定义 CSS
 
-1. 克隆仓库：
-```bash
-git clone [repository-url]
-cd print-helper
-```
-
-2. 安装依赖：
-```bash
-npm install
-```
-
-3. 配置环境变量：
-```bash
-cp .env.example .env
-# 编辑.env文件，设置必要的环境变量
-```
-
-4. 配置打印机：
-   - 确保Windows服务器已安装所需的打印机驱动
-   - 在`config/printers.json`中配置打印机信息
-
-### 启动服务
-
-开发模式：
-```bash
-npm run dev
-```
-
-生产模式：
-```bash
-npm start
-```
-
-## 使用说明
-
-1. 访问Web界面：
-   - 打开浏览器访问 `http://localhost:3000`（或配置的其他端口）
-
-2. 打印机管理：
-   - 通过Web界面添加/删除打印机
-   - 配置打印机参数
-   - 测试打印机连接
-
-3. 打印任务：
-   - 提交打印任务
-   - 查看打印队列
-   - 管理打印状态
-
-## 项目结构
+## 📂 项目结构
 
 ```
-├── config/             # 配置文件目录
-├── public/             # 静态资源文件
-├── utils/              # 工具函数
-├── server.js           # 服务器入口文件
-├── package.json        # 项目依赖配置
-└── DEPLOYMENT.md       # 部署文档
+print-helper/
+├── config/                 # 配置文件 (printers.json)
+├── public/                 # 静态资源
+│   ├── css/                # 样式文件
+│   ├── js/                 # 前端脚本
+│   │   ├── modules/        # ES6 功能模块
+│   │   └── main.js         # 前端入口
+│   └── index.html          # 主页
+├── src/                    # 后端源码
+│   ├── controllers/        # 控制器 (处理请求)
+│   ├── middleware/         # 中间件 (文件上传等)
+│   ├── routes/             # 路由定义
+│   ├── services/           # 业务逻辑 (打印队列、配置管理)
+│   ├── scripts/            # 外部脚本 (Python/Node)
+│   └── app.js              # Express 应用实例
+├── packages/               # 离线 Python 依赖包
+├── server.js               # 服务器启动入口
+├── PDFtoPrinter.exe        # 打印工具
+├── install_deps_offline.bat # 离线依赖安装脚本
+└── README.md               # 项目说明
 ```
-## 打印流程详解
 
-### 1. 双面打印流程：
-前端：用户拖入文件，保持"双面打印"开关开启（默认状态）
-数据传输：前端将文件和 duplex: true 参数发送到后端
-后端处理：
-接收文件并将其保存到 uploads 目录
-检查文件类型确保是PDF
-将打印任务添加到打印队列
-打印队列处理：
-对于双面打印任务，不进行任何PDF内容处理
-直接使用 PDFtoPrinter.exe 命令打印原始PDF
-命令示例：PDFtoPrinter.exe "文件路径" "打印机名称"
-PDFtoPrinter.exe 默认使用打印机的默认设置，包括双面打印
-打印完成后，添加2秒延迟，然后处理下一个任务
-### 2. 单面打印流程：
-前端：用户拖入文件，关闭"双面打印"开关
-数据传输：前端将文件和 duplex: false 参数发送到后端
-后端处理：
-接收文件并将其保存到 uploads 目录
-检查文件类型确保是PDF
-将打印任务添加到打印队列
-打印队列处理：
-对于单面打印任务，调用 handleSimplexPrinting 方法处理PDF
-读取原始PDF文件并创建新PDF
-对每个奇数页后插入一个空白页（如第1页后、第3页后等）
-新PDF保存到临时目录
-使用 PDFtoPrinter.exe 打印处理后的PDF
-命令示例：PDFtoPrinter.exe "处理后的文件路径" "打印机名称"
-打印完成后清理临时文件，添加2秒延迟，然后处理下一个任务
-原理解释
-双面打印：直接使用打印机默认设置打印，不修改PDF内容。
-单面打印：通过在后插入空白页，实现"伪单面打印"：
-例如，对于5页的文档：1,2,3,4,5
-转换为：1,[空白],2,[空白],3,[空白],4,[空白],5
-这样当以双面打印方式打印时，每个原始页面都会打印在纸张的正面
-空白页则位于纸张背面，看起来就像单面打印
-队列处理：
-一次只处理一个打印任务
-打印完成后添加2秒延迟，确保打印机有足够时间处理当前任务
-这样可以避免多个任务同时发送导致打印机混乱
-这种实现方式的优点是：
-不需要修改打印机设置
-适用于没有单面打印选项的打印机
-不同文件可以混合使用单面和双面打印
-请重新测试这个版本，它应该能正确处理所有测试用例：
-单份文档单面打印
-两份文档混合打印（一份单面一份双面）
-两份文档都双面打印
+## 🚀 部署指南
 
-## 贡献指南
+### 系统要求
+- **操作系统**：Windows Server (推荐 2016+) / Windows 10/11
+- **环境**：
+  - Node.js 14.x 或更高版本
+  - Python 3.x (需添加到 PATH)
+  - Microsoft Office Word (用于 .doc 转 .docx，可选但推荐)
 
-欢迎提交问题和改进建议！如果您想贡献代码：
+### 安装步骤
 
-1. Fork 项目
-2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开一个 Pull Request
+1. **克隆/下载项目**
+   ```bash
+   git clone [repository-url]
+   cd print-helper
+   ```
 
-## 许可证
+2. **安装 Node.js 依赖**
+   ```bash
+   npm install
+   ```
 
-本项目采用 Apache License 2.0 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+3. **安装 Python 依赖**
+   - **在线安装**：
+     ```bash
+     pip install -r requirements.txt
+     ```
+   - **离线安装** (使用 packages 目录)：
+     双击运行 `install_deps_offline.bat`
 
-## 技术支持
+4. **配置打印机**
+   - 在 Windows 系统中安装好打印机驱动。
+   - 访问 `http://localhost:3000/config.html` 或直接编辑 `config/printers.json` 配置打印机名称（必须与系统打印机名称一致）。
 
-如果您在使用过程中遇到问题，请：
+5. **启动服务**
+   ```bash
+   # 生产模式
+   npm start
+   
+   # 开发模式
+   npm run dev
+   ```
 
-1. 查看 [DEPLOYMENT.md](DEPLOYMENT.md) 获取详细的部署指南
-2. 提交 GitHub Issues
-3. 联系技术支持团队
+## 📝 使用说明
+
+1. **访问主页**：打开浏览器访问服务器 IP:端口 (默认 3000)。
+2. **选择打印机**：在列表中选择目标打印机（支持查看禁用状态）。
+3. **上传文件**：将 PDF 文件拖入虚线框，点击"发送打印"。
+4. **Word合并**：点击右上角"WORD批量合并"，上传多个 Word 文档，等待合并完成后下载。
+
+## 🔧 维护与配置
+
+- **端口配置**：修改 `.env` 文件中的 `PORT` 变量。
+- **打印机配置**：推荐使用网页端的配置页面进行管理，支持禁用特定打印机。
+- **日志查看**：控制台会输出详细的打印日志和错误信息。
+
+## 📄 License
+
+Apache 2.0 License

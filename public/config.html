@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>打印机配置 - XXXX打印助手</title>
+    <title>打印机配置 - 温岭检察打印助手</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.css">
     <style>
         .printer-config {
             margin-bottom: 20px;
@@ -120,9 +120,13 @@
 </head>
 
 <body>
+    <a href="http://143.86.170.164:10086" target="_blank" class="transfer-station">
+        <i class="bi bi-cloud-upload"></i>
+        <span class="label">文件中转站</span>
+    </a>
     <div class="container">
         <header>
-            <h1><i class="bi bi-printer"></i> XXXX打印助手 - 打印机配置</h1>
+            <h1><i class="bi bi-printer"></i> 温岭检察打印助手 - 打印机配置</h1>
             <p class="subtitle">设置您的打印机</p>
         </header>
 
@@ -153,6 +157,10 @@
                         <div class="form-group">
                             <label for="systemName">系统打印机名称 (必须与Windows系统中的打印机名称一致)</label>
                             <input type="text" id="systemName" placeholder="例如：809打印机" required>
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center;">
+                            <input type="checkbox" id="printerDisabled" style="width: auto; margin-right: 10px;">
+                            <label for="printerDisabled" style="margin-bottom: 0;">禁用此打印机</label>
                         </div>
                         <div class="printer-actions">
                             <button type="submit" class="btn-add" id="saveBtn">
@@ -189,6 +197,7 @@
             const printerIdInput = document.getElementById('printerIdInput');
             const printerName = document.getElementById('printerName');
             const systemName = document.getElementById('systemName');
+            const printerDisabled = document.getElementById('printerDisabled');
             const saveBtn = document.getElementById('saveBtn');
             const cancelBtn = document.getElementById('cancelBtn');
             const printerList = document.getElementById('printerList');
@@ -224,9 +233,18 @@
                         printers.forEach(printer => {
                             const printerElement = document.createElement('div');
                             printerElement.className = 'printer-item';
+                            if (printer.disabled) {
+                                printerElement.style.opacity = '0.7';
+                                printerElement.style.backgroundColor = '#f8f9fa';
+                            }
+
+                            const statusBadge = printer.disabled
+                                ? '<span style="color: #e74c3c; font-weight: bold; margin-left: 10px;">(已禁用)</span>'
+                                : '';
+
                             printerElement.innerHTML = `
                                 <div class="printer-info">
-                                    <h4>${printer.name}</h4>
+                                    <h4>${printer.name}${statusBadge}</h4>
                                     <p>ID: ${printer.id}</p>
                                     <p>系统名称: ${printer.systemName || '未设置'}</p>
                                 </div>
@@ -278,7 +296,8 @@
                 const id = printerIdField.value || printerIdInput.value;
                 const printer = {
                     name: printerName.value,
-                    systemName: systemName.value
+                    systemName: systemName.value,
+                    disabled: printerDisabled.checked
                 };
 
                 fetch(`/api/printers/${id}`, {
@@ -314,6 +333,7 @@
                         printerIdInput.disabled = true;
                         printerName.value = printer.name;
                         systemName.value = printer.systemName || '';
+                        printerDisabled.checked = !!printer.disabled;
 
                         saveBtn.innerHTML = '<i class="bi bi-save"></i> 更新打印机';
                         cancelBtn.style.display = 'block';
@@ -340,17 +360,8 @@
             // 删除打印机
             function deletePrinter(id) {
                 if (confirm('确定要删除这台打印机吗？')) {
-                    // 这里应该有一个删除API，但目前后端可能没有实现
-                    // 临时解决方案：将打印机名称设为空，相当于禁用
                     fetch(`/api/printers/${id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: `已删除的打印机 (${id})`,
-                            systemName: ''
-                        })
+                        method: 'DELETE'
                     })
                         .then(response => response.json())
                         .then(data => {

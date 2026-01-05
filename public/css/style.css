@@ -171,6 +171,18 @@ header h1 {
     background-color: #edf7fd;
 }
 
+.printer-option.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+.printer-option.disabled:hover {
+    border-color: #ddd;
+    background-color: #f8f9fa;
+}
+
 .printer-option i {
     font-size: 1.5rem;
     color: #2c3e50;
@@ -203,13 +215,10 @@ header h1 {
     cursor: not-allowed;
 }
 
-.btn-primary i {
-    margin-right: 10px;
-}
-
 .btn-secondary {
-    background-color: #ecf0f1;
-    color: #2c3e50;
+    background-color: #e67e22;
+    /* Use a distinct color for the new feature */
+    color: white;
     border: none;
     border-radius: 5px;
     padding: 8px 15px;
@@ -219,10 +228,10 @@ header h1 {
 }
 
 .btn-secondary:hover {
-    background-color: #dde4e6;
+    background-color: #d35400;
 }
 
-/* 通知样式 */
+/* Notification */
 .notification {
     position: fixed;
     bottom: 20px;
@@ -230,26 +239,81 @@ header h1 {
     transform: translateX(-50%);
     background-color: #2ecc71;
     color: white;
-    padding: 15px 25px;
+    padding: 10px 20px;
     border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     display: none;
     z-index: 1000;
-    text-align: center;
-    min-width: 300px;
 }
 
-.notification.error {
-    background-color: #e74c3c;
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
 }
 
-/* 页脚样式 */
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.modal-desc {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+#mergeFilesList {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+#mergeFilesList .file-info {
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* Footer 样式 */
 footer {
     text-align: center;
-    color: #7f8c8d;
-    margin-top: 30px;
+    margin-top: 50px;
     padding-top: 20px;
-    border-top: 1px solid #ecf0f1;
+    border-top: 1px solid #eee;
+    color: #7f8c8d;
 }
 
 footer a {
@@ -257,89 +321,47 @@ footer a {
     text-decoration: none;
 }
 
-footer a:hover {
-    text-decoration: underline;
-}
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
 
-    header h1 {
-        font-size: 2rem;
-    }
-
-    .card {
-        padding: 20px;
-    }
-
-    .printer-list {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    }
-}
-
-@media (max-width: 480px) {
-    header h1 {
-        font-size: 1.8rem;
-    }
-
-    .subtitle {
-        font-size: 1rem;
-    }
-
-    .printer-list {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .notification {
-        min-width: 90%;
-    }
-}
-
-/* 文件列表样式 */
-.files-list {
-    margin: 20px 0;
-}
-
-.file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    border: 1px solid #dee2e6;
-}
-
-.file-preview {
+/* 文件中转站浮动窗口 */
+.transfer-station {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-.file-preview i {
-    font-size: 24px;
-    color: #6c757d;
-}
-
-.file-options {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.btn-remove {
-    background: none;
-    border: none;
-    color: #dc3545;
+    text-decoration: none;
+    color: #2c3e50;
     cursor: pointer;
-    padding: 5px;
-    font-size: 18px;
 }
 
-.btn-remove:hover {
-    color: #c82333;
+.transfer-station:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    color: #3498db;
+    text-decoration: none;
+}
+
+.transfer-station i {
+    font-size: 1.5rem;
+    color: #3498db;
+}
+
+.transfer-station .label {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+
+
+footer a:hover {
+    text-decoration: underline;
 }

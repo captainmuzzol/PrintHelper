@@ -9,6 +9,37 @@
 - 所有网络打印机的驱动程序
 - 网络连接到所有打印机
 
+## 离线环境 Word 合并功能配置
+
+如果服务器没有外网连接，请按照以下步骤配置“WORD批量合并”功能所需的 Python 环境。
+
+### 1. 安装 Python
+请确保服务器已安装 Python 3.8 或更高版本。
+- 建议安装路径：`C:\Python38`（或其他简单路径）
+- **重要**：安装时务必勾选 **"Add Python to PATH"**
+
+### 2. 离线安装依赖库
+本项目已包含所有必要的 Python 离线安装包（位于 `packages` 目录）。
+
+1. 确保将项目目录中的 `packages` 文件夹完整拷贝到服务器。
+2. 双击运行项目根目录下的 **`install_deps_offline.bat`** 脚本。
+   - 该脚本会自动从 `packages` 目录安装以下库：
+     - `python-docx`
+     - `docxcompose`
+     - `pywin32` (用于 doc 格式转换)
+     - 及其相关依赖
+
+### 3. 验证安装
+打开命令提示符（CMD），输入以下命令检查是否安装成功：
+```bash
+python -c "import docx, docxcompose, win32com; print('OK')"
+```
+如果输出 `OK`，则说明环境配置成功。
+
+### 4. 注意事项
+- 必须安装 **Microsoft Word** 或 **WPS Office**，否则无法将 `.doc` 转换为 `.docx`。
+- 确保 Python 已添加到系统环境变量 PATH 中。
+
 ## 安装步骤
 
 ### 1. 安装Node.js

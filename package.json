@@ -7,7 +7,7 @@
         "start": "node server.js",
         "dev": "nodemon server.js",
         "install-deps": "npm install",
-        "test-printers": "echo \"请实现打印机测试功能\""
+        "test-printers": "node src/scripts/testPrinter.js"
     },
     "dependencies": {
         "body-parser": "^1.20.2",
@@ -17,12 +17,7 @@
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
-        "fs": "0.0.1-security",
-        "multer": "^1.4.5-lts.1",
-        "path": "^0.12.7",
-        "pdf-lib": "^1.17.1",
-        "pdf2json": "^3.1.5",
-        "pdfkit": "^0.17.1"
+        "multer": "^1.4.5-lts.1"
     },
     "devDependencies": {
         "nodemon": "^3.0.1"
